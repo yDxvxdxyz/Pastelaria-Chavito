@@ -6,7 +6,7 @@ Site da pastelaria. Vê o cardápio, faz o pedido, chama no WhatsApp.
 
 ## Como usar
 
-Abre o [site](https://wa.me/5548999497113) no navegador. É só isso.
+Abre o [site](https://pastelaria-chaves.vercel.app/) no navegador. É só isso.
 
 ---
 
