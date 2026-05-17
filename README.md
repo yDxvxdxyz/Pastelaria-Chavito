@@ -1,4 +1,4 @@
-# Pastelaria Chavito Brainrotzito
+# Pastelaria Chavito
 
 Site da pastelaria. Vê o cardápio, faz o pedido, chama no WhatsApp.
 
