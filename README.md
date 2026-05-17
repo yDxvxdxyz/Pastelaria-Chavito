@@ -29,7 +29,7 @@ Abre o [site](https://pastelaria-chaves.vercel.app/) no navegador. É só isso.
 | | Presunto, Queijo, Requeijão e Orégano | R$ 6,50 | R$ 7,50 |
 | | Frango com Requeijão | R$ 6,50 | R$ 7,50 |
 | | Strogonocof | R$ 6,50 | R$ 7,50 |
-
+| |             |         |         |
 | **Doces (Fritos)** | Chocolate Preto | R$ 7,50 | R$ 8,50 |
 | | Chocolate Branco | R$ 7,50 | R$ 8,50 |
 | | Oreo | R$ 8,00 | R$ 9,00 |
