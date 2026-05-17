@@ -175,7 +175,7 @@ nav {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.4rem;
   transition: background 0.18s;
 }
 .menu-item:hover { background: var(--bg3); }
@@ -187,6 +187,22 @@ nav {
   line-height: 1.35;
 }
 
+.item-desc {
+  font-size: 0.775rem;
+  color: var(--muted);
+  font-weight: 400;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
 .item-price {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
@@ -194,6 +210,42 @@ nav {
   color: var(--accent);
 }
 .item-price.doce { color: #c49eff; }
+
+.badge-sl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.lactose-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(74,222,128,0.05);
+  border: 1px solid rgba(74,222,128,0.15);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 2rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.lactose-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  margin-top: 5px;
+}
 
 .lista-simples {
   display: flex;
@@ -212,6 +264,9 @@ nav {
   font-weight: 600;
   color: var(--text);
   transition: background 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .lista-item:hover { background: var(--bg3); }
 
@@ -338,26 +393,48 @@ footer {
   <section class="section reveal">
     <h2 class="section-title">Aqueles frito q n pode faltar</h2>
     <p class="section-note">Qualquer um por R$6,50 — sem exceção</p>
+
+    <div class="lactose-info">
+      <div class="lactose-dot"></div>
+      <span>Qualquer pastel pode ser feito sem lactose — é só pedir na hora do pedido.</span>
+    </div>
+
     <div class="menu-grid">
       <div class="menu-item">
         <span class="item-name">Presunto e Queijo</span>
-        <span class="item-price">R$6,50</span>
+        <div class="item-footer">
+          <span class="item-price">R$6,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Queijo com Orégano</span>
-        <span class="item-price">R$6,50</span>
+        <div class="item-footer">
+          <span class="item-price">R$6,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Presunto, Queijo, Requeijão e Orégano</span>
-        <span class="item-price">R$6,50</span>
+        <div class="item-footer">
+          <span class="item-price">R$6,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Frango com Requeijão</span>
-        <span class="item-price">R$6,50</span>
+        <div class="item-footer">
+          <span class="item-price">R$6,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Strogonocof</span>
-        <span class="item-price">R$6,50</span>
+        <span class="item-desc">Frango, requeijão e tempero. Tipo um strogonoff normal, só que no pastel.</span>
+        <div class="item-footer">
+          <span class="item-price">R$6,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
     </div>
   </section>
@@ -368,19 +445,31 @@ footer {
     <div class="menu-grid">
       <div class="menu-item">
         <span class="item-name">Chocolate Preto</span>
-        <span class="item-price doce">R$7,50</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$7,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Chocolate Branco</span>
-        <span class="item-price doce">R$7,50</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$7,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Oreo</span>
-        <span class="item-price doce">R$8,00</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$8,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
       <div class="menu-item">
         <span class="item-name">Mesclado (Preto + Branco)</span>
-        <span class="item-price doce">R$8,00</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$8,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
       </div>
     </div>
   </section>
@@ -390,15 +479,15 @@ footer {
     <p class="section-note">Os queridinho — principalmente pro cebolita</p>
     <p class="assado-note">Os mesmos dos frito, muda merda nenhuma (só o preço q aumenta 50c).</p>
     <div class="lista-simples">
-      <div class="lista-item">Presunto e Queijo</div>
-      <div class="lista-item">Queijo com Orégano</div>
-      <div class="lista-item">Presunto, Queijo, Requeijão e Orégano</div>
-      <div class="lista-item">Frango com Requeijão</div>
-      <div class="lista-item">Strogonocof</div>
-      <div class="lista-item">Chocolate Preto</div>
-      <div class="lista-item">Chocolate Branco</div>
-      <div class="lista-item">Oreo</div>
-      <div class="lista-item">Mesclado (Preto + Branco)</div>
+      <div class="lista-item"><span>Presunto e Queijo</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Queijo com Orégano</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Presunto, Queijo, Requeijão e Orégano</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Frango com Requeijão</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Strogonocof</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Chocolate Preto</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Chocolate Branco</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Oreo</span><span class="badge-sl">sem lactose</span></div>
+      <div class="lista-item"><span>Mesclado (Preto + Branco)</span><span class="badge-sl">sem lactose</span></div>
     </div>
   </section>
 
