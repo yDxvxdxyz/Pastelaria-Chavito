@@ -1441,13 +1441,361 @@
       outline: none;
       border-color: var(--accent);
     }
+
+    /* --- ESTILOS DE STATUS DE LOJA E PAINEL ADMIN INVISÍVEL --- */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+      user-select: none;
+    }
+    
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      position: relative;
+    }
+    
+    .status-dot::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      animation: status-pulse 1.8s infinite ease-in-out;
+    }
+    
+    @keyframes status-pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    
+    .status-badge.open {
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.2);
+      background: rgba(74, 222, 128, 0.04);
+    }
+    .status-badge.open .status-dot {
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+    }
+    .status-badge.open .status-dot::after {
+      background: #4ade80;
+    }
+    
+    .status-badge.closed {
+      color: #f87171;
+      border-color: rgba(248, 113, 113, 0.2);
+      background: rgba(248, 113, 113, 0.04);
+    }
+    .status-badge.closed .status-dot {
+      background: #f87171;
+      box-shadow: 0 0 6px #f87171;
+    }
+    .status-badge.closed .status-dot::after {
+      background: #f87171;
+    }
+
+    .store-closed-banner {
+      display: none;
+      background: rgba(248, 113, 113, 0.05);
+      border: 1px solid rgba(248, 113, 113, 0.15);
+      border-left: 4px solid #f87171;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 2rem;
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+      animation: bannerFadeIn 0.4s ease;
+      text-align: left;
+    }
+    
+    .store-closed-banner strong {
+      color: #f87171;
+      font-weight: 700;
+    }
+    
+    @keyframes bannerFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .admin-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(10px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .admin-modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .admin-modal-card {
+      background: #0d0d0d;
+      border: 1px solid rgba(245, 196, 0, 0.15);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 35px rgba(245, 196, 0, 0.04);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 350px;
+      padding: 2.25rem 2rem;
+      position: relative;
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .admin-modal-overlay.open .admin-modal-card {
+      transform: translateY(0) scale(1);
+    }
+    
+    .admin-modal-close {
+      position: absolute;
+      top: 0.85rem;
+      right: 1.1rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    
+    .admin-modal-close:hover {
+      color: var(--text);
+    }
+    
+    .admin-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+    
+    .admin-subtitle {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+    
+    .admin-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+      width: 100%;
+    }
+    
+    .admin-form-group label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      text-align: left;
+    }
+    
+    .admin-form-group input {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .admin-form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(245, 196, 0, 0.08);
+    }
+    
+    .admin-btn {
+      width: 100%;
+      background: var(--gradient);
+      color: #0a0a0a;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      margin-top: 0.4rem;
+    }
+    
+    .admin-btn:hover {
+      opacity: 0.95;
+      box-shadow: 0 0 15px rgba(245, 196, 0, 0.15);
+    }
+    
+    .admin-error {
+      color: #f87171;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.6rem;
+      text-align: center;
+      display: none;
+    }
+    
+    .admin-panel-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      width: 100%;
+    }
+    
+    .admin-login-view {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .status-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+    }
+    
+    .status-toggle-label {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+    }
+    
+    .status-toggle-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+    
+    .status-toggle-desc {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+    
+    .admin-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    
+    .admin-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .admin-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #27272a;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    
+    .admin-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .admin-switch input:checked + .admin-slider {
+      background-color: #4ade80;
+    }
+    
+    .admin-switch input:checked + .admin-slider:before {
+      transform: translateX(24px);
+    }
+    
+    .admin-logout-btn {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .admin-logout-btn:hover {
+      border-color: rgba(248, 113, 113, 0.4);
+      color: #f87171;
+    }
+
+    @media (max-width: 620px) {
+      .status-badge {
+        margin-left: 0.4rem;
+        padding: 0.15rem 0.4rem;
+        font-size: 0.6rem;
+      }
+    }
   </style>
 </head>
 
 <body>
 
   <nav>
-    <div class="nav-logo">Chavito T.I. / 2-51</div>
+    <div class="nav-logo" id="navLogo">
+      Chavito T.I. / 2-51
+      <div id="storeStatusBadge" class="status-badge open">
+        <span class="status-dot"></span>
+        <span class="status-text">Aberto</span>
+      </div>
+    </div>
     <ul class="nav-links">
       <li><a href="#cardapio">Cardápio</a></li>
       <li><a href="#pedido">Pedir</a></li>
@@ -1466,6 +1814,9 @@
   </section>
 
   <div id="cardapio" class="wrapper">
+    <div id="storeClosedBanner" class="store-closed-banner">
+      <strong>⚠️ AVISO:</strong> A pastelaria está fechada no momento, mas você ainda pode montar seu carrinho de compras e <strong>agendar seu pedido</strong> pelo WhatsApp!
+    </div>
 
     <section class="section reveal">
       <h2 class="section-title">Pastéis Fritos</h2>
@@ -1704,11 +2055,225 @@
     <button class="cart-bar-btn" id="cartBarBtn">Ver carrinho</button>
   </div>
 
+  <!-- Modal Admin Secreto (Login e Controle) -->
+  <div class="admin-modal-overlay" id="adminModal">
+    <div class="admin-modal-card">
+      <button class="admin-modal-close" id="adminModalClose">&times;</button>
+      
+      <!-- View 1: Login -->
+      <div class="admin-login-view" id="adminLoginView">
+        <h3 class="admin-title">Painel de Acesso</h3>
+        <p class="admin-subtitle">Área Administrativa</p>
+        
+        <div class="admin-form-group">
+          <label for="adminPassword">Senha de Acesso</label>
+          <input type="password" id="adminPassword" placeholder="Digite a senha..." required>
+        </div>
+        
+        <button class="admin-btn" id="adminLoginBtn">Confirmar</button>
+        <div class="admin-error" id="adminLoginError">Senha incorreta. Tente novamente.</div>
+      </div>
+      
+      <!-- View 2: Painel de Controle -->
+      <div class="admin-panel-view" id="adminPanelView">
+        <h3 class="admin-title">Gerenciamento</h3>
+        <p class="admin-subtitle">Status do Estabelecimento</p>
+        
+        <div class="status-toggle-wrapper">
+          <div class="status-toggle-label">
+            <span class="status-toggle-title" id="statusLabelTitle">Status da Loja</span>
+            <span class="status-toggle-desc" id="statusLabelDesc">Defina se a loja está aberta ou fechada</span>
+          </div>
+          <label class="admin-switch">
+            <input type="checkbox" id="statusToggleCheckbox" checked>
+            <span class="admin-slider"></span>
+          </label>
+        </div>
+        
+        <button class="admin-logout-btn" id="adminLogoutBtn">Sair do Painel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.07 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // --- GERENCIAMENTO DE STATUS DA LOJA & PAINEL DE CONTROLE SECRETO ---
+    const SUPABASE_URL = 'https://rgxarimlhorkyefyldyh.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_s1ShNbGDSERms8FmeYXMcQ_z71N7P2c';
+    let isStoreOpen = localStorage.getItem('pastelariaLojaAberta') !== 'false';
+
+    function updateStoreStatusUI() {
+      const statusBadge = document.getElementById('storeStatusBadge');
+      const closedBanner = document.getElementById('storeClosedBanner');
+      const cartWppBtn = document.getElementById('cartWppBtn');
+      const btnContatoWpp = document.getElementById('btnContatoWpp');
+
+      if (isStoreOpen) {
+        // UI Aberto
+        if (statusBadge) {
+          statusBadge.className = 'status-badge open';
+          statusBadge.querySelector('.status-text').textContent = 'Aberto';
+        }
+        if (closedBanner) {
+          closedBanner.style.display = 'none';
+        }
+        if (cartWppBtn) {
+          cartWppBtn.textContent = 'Finalizar no WhatsApp';
+        }
+        if (btnContatoWpp) {
+          btnContatoWpp.textContent = 'Chamar no WhatsApp';
+        }
+      } else {
+        // UI Fechado
+        if (statusBadge) {
+          statusBadge.className = 'status-badge closed';
+          statusBadge.querySelector('.status-text').textContent = 'Fechado';
+        }
+        if (closedBanner) {
+          closedBanner.style.display = 'block';
+        }
+        if (cartWppBtn) {
+          cartWppBtn.textContent = 'Agendar no WhatsApp';
+        }
+        if (btnContatoWpp) {
+          btnContatoWpp.textContent = 'Agendar via WhatsApp';
+        }
+      }
+    }
+
+    // Supabase Integration
+    async function fetchLojaStatus() {
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/loja_status?id=eq.1&select=aberta`, {
+          method: 'GET',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.length > 0) {
+            isStoreOpen = data[0].aberta;
+            localStorage.setItem('pastelariaLojaAberta', isStoreOpen);
+            updateStoreStatusUI();
+            
+            // Sync checkbox if open
+            if (statusToggleCheckbox) {
+              statusToggleCheckbox.checked = isStoreOpen;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao buscar status do Supabase, usando local:', err);
+      }
+    }
+
+    async function updateLojaStatusInSupabase(status) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/loja_status?id=eq.1`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ aberta: status })
+        });
+      } catch (err) {
+        console.error('Erro ao salvar status no Supabase:', err);
+      }
+    }
+
+    // Modal Admin Controls
+    const navLogo = document.getElementById('navLogo');
+    const adminModal = document.getElementById('adminModal');
+    const adminModalClose = document.getElementById('adminModalClose');
+    const adminLoginView = document.getElementById('adminLoginView');
+    const adminPanelView = document.getElementById('adminPanelView');
+    const adminPasswordInput = document.getElementById('adminPassword');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminLoginError = document.getElementById('adminLoginError');
+    const statusToggleCheckbox = document.getElementById('statusToggleCheckbox');
+    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+
+    // Double-click event to open admin modal
+    if (navLogo) {
+      navLogo.addEventListener('dblclick', (e) => {
+        // Totalmente oculto, nenhuma indicação visual na tela além da ação do clique
+        adminPasswordInput.value = '';
+        adminLoginError.style.display = 'none';
+        adminLoginView.style.display = 'flex';
+        adminPanelView.style.display = 'none';
+        adminModal.classList.add('open');
+      });
+    }
+
+    // Close admin modal
+    if (adminModalClose) {
+      adminModalClose.addEventListener('click', () => {
+        adminModal.classList.remove('open');
+      });
+    }
+
+    // Close modal when clicking overlay
+    if (adminModal) {
+      adminModal.addEventListener('click', (e) => {
+        if (e.target === adminModal) {
+          adminModal.classList.remove('open');
+        }
+      });
+    }
+
+    // Handle authentication
+    function checkAdminLogin() {
+      const password = adminPasswordInput.value;
+      if (password === 'olivia11@') {
+        adminLoginError.style.display = 'none';
+        adminLoginView.style.display = 'none';
+        adminPanelView.style.display = 'flex';
+        statusToggleCheckbox.checked = isStoreOpen;
+      } else {
+        adminLoginError.style.display = 'block';
+      }
+    }
+
+    if (adminLoginBtn) {
+      adminLoginBtn.addEventListener('click', checkAdminLogin);
+    }
+    if (adminPasswordInput) {
+      adminPasswordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          checkAdminLogin();
+        }
+      });
+    }
+
+    // Toggle status checkbox
+    if (statusToggleCheckbox) {
+      statusToggleCheckbox.addEventListener('change', (e) => {
+        isStoreOpen = e.target.checked;
+        localStorage.setItem('pastelariaLojaAberta', isStoreOpen);
+        updateStoreStatusUI();
+        updateLojaStatusInSupabase(isStoreOpen);
+      });
+    }
+
+    // Logout / Fechar Painel
+    if (adminLogoutBtn) {
+      adminLogoutBtn.addEventListener('click', () => {
+        adminModal.classList.remove('open');
+      });
+    }
+
+    // Inicializar UI no carregamento e buscar do banco
+    updateStoreStatusUI();
+    fetchLojaStatus();
 
     // Cart System
     let cart = JSON.parse(localStorage.getItem('pastelariaCart')) || [];
@@ -1873,7 +2438,9 @@
       }
 
       const total = cart.reduce((sum, item) => sum + item.price, 0);
-      let message = `*Pedido - Pastelaria Chavito*\n`;
+      let message = isStoreOpen 
+        ? `*Pedido - Pastelaria Chavito*\n` 
+        : `*⚠️ AGENDAMENTO DE PEDIDO (Loja Fechada) - Pastelaria Chavito*\n`;
       message += `*Cliente:* ${nome}\n`;
       message += `*Turma:* ${turma}\n\n`;
       message += `*Itens:*\n`;
@@ -1885,7 +2452,9 @@
       });
 
       message += `\n*Total: R$${total.toFixed(2).replace('.', ',')}*`;
-      message += '\n\nAguardo confirmação!';
+      message += isStoreOpen 
+        ? '\n\nAguardo confirmação!' 
+        : '\n\nEstou enviando para agendar o meu pedido! Aguardo confirmação!';
 
       const encoded = encodeURIComponent(message);
       window.open(`https://wa.me/5548999497113?text=${encoded}`, '_blank');
@@ -1903,7 +2472,9 @@
           return;
         }
 
-        const message = `Oi, quero comer pastel, me vende\n\n*Nome:* ${nome}\n*Turma:* ${turma}`;
+        const message = isStoreOpen 
+          ? `Oi, quero comer pastel, me vende\n\n*Nome:* ${nome}\n*Turma:* ${turma}`
+          : `*⚠️ AGENDAMENTO DE PEDIDO (Loja Fechada)*\n\nOi, a pastelaria está fechada no momento, mas gostaria de deixar um pedido agendado!\n\n*Nome:* ${nome}\n*Turma:* ${turma}`;
         const encoded = encodeURIComponent(message);
         window.open(`https://wa.me/5548999497113?text=${encoded}`, '_blank');
       });
