@@ -6,7 +6,7 @@ Site da pastelaria. Vê o cardápio, faz o pedido, chama no WhatsApp.
 
 ## Como usar
 
-Abre o `[+55 48 9949-7113](https://wa.me/5548999497113)` no navegador. É só isso.
+Abre o [site](https://wa.me/5548999497113) no navegador. É só isso.
 
 ---
 
