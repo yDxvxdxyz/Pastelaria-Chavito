@@ -3,21 +3,636 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pastelaria Chavito Brainrotzito</title>
+<title>Pastelaria Chavito</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+.cart-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  z-index: 200;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  min-width: 280px;
+  max-width: calc(100vw - 3rem);
+}
+.cart-bar.visible { transform: translateX(-50%) translateY(0); }
+
+.cart-bar-info { flex: 1; }
+.cart-bar-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cart-bar-total {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
+.cart-bar-btn {
+  background: var(--accent);
+  color: #0e0e0e;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.cart-bar-btn:hover { opacity: 0.85; }
+
+.cart-clear {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.cart-clear:hover { color: var(--text); }
+
+.cart-drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 360px;
+  max-width: 100vw;
+  z-index: 300;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  box-shadow: -8px 0 40px rgba(0,0,0,0.4);
+}
+.cart-drawer.open { transform: translateX(0); }
+
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.cart-header h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.cart-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.2rem;
+  transition: color 0.2s;
+}
+.cart-close:hover { color: var(--text); }
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cart-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.cart-entry {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.cart-entry-info { flex: 1; }
+.cart-entry-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.cart-entry-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+.cart-entry-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 3px;
+  padding: 1px 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+.cart-entry-tag:hover {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.4);
+}
+.cart-entry-tag.tipo {
+  color: var(--muted);
+  border-color: var(--border);
+  cursor: default;
+}
+.cart-entry-tag.tipo:hover {
+  background: transparent;
+  border-color: var(--border);
+}
+.cart-entry-price {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.cart-entry-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.cart-entry-remove:hover { color: #f87171; }
+
+.cart-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.cart-footer-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cart-footer-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cart-footer-value {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+.cart-wpp-btn {
+  background: #25D366;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+.cart-wpp-btn:hover { opacity: 0.88; }
+
+.menu-item {
+  cursor: pointer;
+  position: relative;
+}
+.menu-item.in-cart {
+  background: var(--bg3);
+  outline: 1px solid rgba(245,196,0,0.25);
+}
+
+.badge-sl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 4px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(74,222,128,0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.badge-sl::before {
+  content: '○ ';
+  margin-right: 2px;
+  opacity: 0.6;
+}
+.badge-sl:hover {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.4);
+  transform: scale(1.05);
+}
+.badge-sl.active::before {
+  content: '● ';
+  opacity: 1;
+}
+.badge-sl.active {
+  background: rgba(74,222,128,0.2);
+  border-color: #4ade80;
+  box-shadow: 0 0 15px rgba(74,222,128,0.4);
+}
+
+.add-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  background: rgba(245,196,0,0.08);
+  border: 1px solid rgba(245,196,0,0.2);
+  color: var(--accent);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: center;
+}
+.add-btn:hover { background: rgba(245,196,0,0.15); border-color: rgba(245,196,0,0.4); }
+.add-btn.added { background: rgba(245,196,0,0.18); border-color: rgba(245,196,0,0.5); }
+
+.lista-item {
+  cursor: pointer;
+}
+.lista-item.in-cart { background: var(--bg3); outline: 1px solid rgba(245,196,0,0.2); }
+
 :root {
-  --bg: #0e0e0e;
-  --bg2: #161616;
-  --bg3: #1e1e1e;
-  --border: rgba(255,255,255,0.08);
+  --bg: #0a0a0a;
+  --bg2: #121212;
+  --bg3: #1a1a1a;
+  --border: rgba(255,255,255,0.06);
   --text: #f5f5f0;
-  --muted: rgba(245,245,240,0.45);
+  --muted: rgba(245,245,240,0.5);
   --accent: #F5C400;
   --accent2: #FF6200;
+  --gradient: linear-gradient(135deg, #F5C400 0%, #FFD700 100%);
 }
+
+.cart-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  z-index: 200;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  min-width: 280px;
+  max-width: calc(100vw - 3rem);
+}
+.cart-bar.visible { transform: translateX(-50%) translateY(0); }
+
+.cart-bar-info { flex: 1; }
+.cart-bar-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cart-bar-total {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
+.cart-bar-btn {
+  background: var(--accent);
+  color: #0e0e0e;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.cart-bar-btn:hover { opacity: 0.85; }
+
+.cart-clear {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.cart-clear:hover { color: var(--text); }
+
+.cart-drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 360px;
+  max-width: 100vw;
+  z-index: 300;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  box-shadow: -8px 0 40px rgba(0,0,0,0.4);
+}
+.cart-drawer.open { transform: translateX(0); }
+
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.cart-overlay.open { opacity: 1; pointer-events: all; }
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.cart-header h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.cart-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.2rem;
+  transition: color 0.2s;
+}
+.cart-close:hover { color: var(--text); }
+
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cart-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.cart-entry {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.cart-entry-info { flex: 1; }
+.cart-entry-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.cart-entry-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+.cart-entry-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 3px;
+  padding: 1px 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+.cart-entry-tag:hover {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.4);
+}
+.cart-entry-tag.tipo {
+  color: var(--muted);
+  border-color: var(--border);
+  cursor: default;
+}
+.cart-entry-tag.tipo:hover {
+  background: transparent;
+  border-color: var(--border);
+}
+.cart-entry-price {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.cart-entry-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.cart-entry-remove:hover { color: #f87171; }
+
+.cart-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.cart-footer-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cart-footer-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cart-footer-value {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+.cart-wpp-btn {
+  background: #25D366;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+.cart-wpp-btn:hover { opacity: 0.88; }
+
+.menu-item {
+  cursor: pointer;
+  position: relative;
+}
+.menu-item.in-cart {
+  background: var(--bg3);
+  outline: 1px solid rgba(245,196,0,0.25);
+}
+
+.badge-sl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 4px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(74,222,128,0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.badge-sl::before {
+  content: '○ ';
+  margin-right: 2px;
+  opacity: 0.6;
+}
+.badge-sl:hover {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.4);
+  transform: scale(1.05);
+}
+.badge-sl.active::before {
+  content: '● ';
+  opacity: 1;
+}
+.badge-sl.active {
+  background: rgba(74,222,128,0.2);
+  border-color: #4ade80;
+  box-shadow: 0 0 15px rgba(74,222,128,0.4);
+}
+
+.add-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  background: rgba(245,196,0,0.08);
+  border: 1px solid rgba(245,196,0,0.2);
+  color: var(--accent);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: center;
+}
+.add-btn:hover { background: rgba(245,196,0,0.15); border-color: rgba(245,196,0,0.4); }
+.add-btn.added { background: rgba(245,196,0,0.18); border-color: rgba(245,196,0,0.5); }
+
+.lista-item {
+  cursor: pointer;
+}
+.lista-item.in-cart { background: var(--bg3); outline: 1px solid rgba(245,196,0,0.2); }
 
 html { scroll-behavior: smooth; }
 
@@ -28,6 +643,8 @@ body {
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
+  background-image: radial-gradient(circle at 20% 50%, rgba(245,196,0,0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255,98,0,0.02) 0%, transparent 50%);
 }
 
 nav {
@@ -38,9 +655,10 @@ nav {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  background: rgba(14,14,14,0.9);
-  backdrop-filter: blur(14px);
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
 }
 
 .nav-logo {
@@ -75,6 +693,7 @@ nav {
   justify-content: center;
   text-align: center;
   padding: 8rem 1.5rem 5rem;
+  background: radial-gradient(circle at 50% 30%, rgba(245,196,0,0.08) 0%, transparent 60%);
 }
 
 .hero-eyebrow {
@@ -92,6 +711,10 @@ nav {
   font-size: clamp(3.2rem, 10vw, 7rem);
   line-height: 0.94;
   letter-spacing: -0.025em;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-title .accent { color: var(--accent); }
@@ -118,20 +741,21 @@ nav {
   font-weight: 600;
   font-size: 0.875rem;
   padding: 0.75rem 1.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   text-decoration: none;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: all 0.25s ease;
   cursor: pointer;
   border: none;
   letter-spacing: 0.01em;
 }
-.btn:hover { opacity: 0.85; transform: translateY(-1px); }
-.btn:active { transform: scale(0.98); }
+.btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,196,0,0.2); }
+.btn:active { transform: scale(0.97); }
 
-.btn-fill { background: var(--accent); color: #0e0e0e; }
+.btn-fill { background: var(--gradient); color: #0a0a0a; }
 .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
-.btn-outline:hover { border-color: rgba(255,255,255,0.22); }
-.btn-dark { background: #0e0e0e; color: var(--accent); font-weight: 700; }
+.btn-outline:hover { border-color: var(--accent); background: rgba(245,196,0,0.05); }
+.btn-dark { background: var(--bg3); color: var(--accent); font-weight: 700; border: 1px solid var(--border); }
+.btn-dark:hover { border-color: var(--accent); }
 
 .wrapper {
   max-width: 860px;
@@ -165,8 +789,9 @@ nav {
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .menu-item {
@@ -176,9 +801,21 @@ nav {
   flex-direction: column;
   justify-content: space-between;
   gap: 0.4rem;
-  transition: background 0.18s;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
-.menu-item:hover { background: var(--bg3); }
+.menu-item:hover { background: var(--bg3); transform: translateY(-2px); }
+.menu-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.menu-item:hover::before { transform: scaleX(1); }
 
 .item-name {
   font-weight: 600;
@@ -213,8 +850,9 @@ nav {
   font-weight: 800;
   font-size: 1.2rem;
   color: var(--accent);
+  text-shadow: 0 0 20px rgba(245,196,0,0.3);
 }
-.item-price.doce { color: #c49eff; }
+.item-price.doce { color: #c49eff; text-shadow: 0 0 20px rgba(196,158,255,0.3); }
 
 .badge-sl {
   font-size: 0.65rem;
@@ -224,8 +862,27 @@ nav {
   color: #4ade80;
   border: 1px solid rgba(74,222,128,0.25);
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 3px 8px;
   white-space: nowrap;
+  box-shadow: 0 0 10px rgba(74,222,128,0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.badge-sl::before {
+  content: '○ ';
+  margin-right: 2px;
+  opacity: 0.6;
+}
+.badge-sl:hover {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.4);
+  transform: scale(1.05);
+}
+.badge-sl.active::before {
+  content: '● ';
+  opacity: 1;
 }
 
 .lactose-info {
@@ -284,11 +941,12 @@ nav {
 }
 
 .cta-box {
-  background: var(--accent);
-  color: #0e0e0e;
-  border-radius: 12px;
+  background: var(--gradient);
+  color: #0a0a0a;
+  border-radius: 16px;
   padding: 3rem 2rem;
   text-align: center;
+  box-shadow: 0 8px 40px rgba(245,196,0,0.25);
 }
 
 .cta-box h2 {
@@ -317,9 +975,11 @@ nav {
 .pag-card {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 1.35rem 1.25rem;
+  transition: all 0.2s ease;
 }
+.pag-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
 
 .pag-label {
   font-family: 'Syne', sans-serif;
@@ -363,19 +1023,173 @@ footer {
 
 @media (max-width: 620px) {
   .nav-links { display: none; }
-  nav { padding: 1rem 1.25rem; }
-  .hero { padding: 6.5rem 1.25rem 4rem; }
-  .section { padding: 4rem 0; }
-  .cta-box { padding: 2rem 1.25rem; }
-  .hero-actions { flex-direction: column; width: 100%; max-width: 260px; }
-  .btn { text-align: center; }
+  nav { padding: 0.875rem 1rem; }
+  .hero { padding: 5.5rem 1rem 3.5rem; }
+  .section { padding: 3rem 0; }
+  .cta-box { padding: 2rem 1rem; }
+  .hero-actions { flex-direction: column; width: 100%; max-width: 280px; gap: 0.6rem; }
+  .btn { text-align: center; width: 100%; padding: 0.7rem 1.5rem; }
+  
+  .menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1px;
+  }
+  
+  .menu-item {
+    padding: 1rem 0.85rem 0.85rem;
+  }
+  
+  .item-name {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+  
+  .item-desc {
+    font-size: 0.7rem;
+  }
+  
+  .item-price {
+    font-size: 1.05rem;
+  }
+  
+  .badge-sl {
+    font-size: 0.55rem;
+    padding: 2px 5px;
+  }
+  .badge-sl::before {
+    content: '○';
+    margin-right: 1px;
+  }
+  .badge-sl.active::before {
+    content: '●';
+  }
+  
+  .add-btn {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .cart-drawer {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .cart-bar {
+    left: 0.75rem;
+    right: 0.75rem;
+    transform: translateY(120px);
+    min-width: auto;
+    padding: 0.75rem 1rem;
+  }
+  .cart-bar.visible { transform: translateY(0); }
+  
+  .cart-bar-info { flex: 1; min-width: 0; }
+  .cart-bar-count { font-size: 0.65rem; }
+  .cart-bar-total { font-size: 1rem; }
+  .cart-bar-btn { font-size: 0.75rem; padding: 0.5rem 0.9rem; }
+  
+  .pag-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pag-card {
+    padding: 1.1rem 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .section-note {
+    font-size: 0.8rem;
+  }
+}
+
+/* Custom form styles for Name and Class/Group */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto 1.5rem;
+}
+.contact-form .input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+.contact-form .input-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(10,10,10,0.8);
+}
+.contact-form .input-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(10,10,10,0.12);
+  border-radius: 8px;
+  color: #0a0a0a;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.contact-form .input-group input::placeholder {
+  color: rgba(10,10,10,0.45);
+}
+.contact-form .input-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #0a0a0a;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.cart-form-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.cart-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+}
+.cart-input-field label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.cart-input-field input {
+  padding: 0.5rem 0.75rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.825rem;
+  transition: border-color 0.2s;
+}
+.cart-input-field input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo">Chavito T.I / 2-51</div>
+  <div class="nav-logo">Chavito T.I. / 2-51</div>
   <ul class="nav-links">
     <li><a href="#cardapio">Cardápio</a></li>
     <li><a href="#pedido">Pedir</a></li>
@@ -385,8 +1199,8 @@ footer {
 
 <section class="hero">
   <p class="hero-eyebrow">Pastelaria</p>
-  <h1 class="hero-title">Chavito<br><span class="accent">Brainrotzito</span></h1>
-  <p class="hero-desc">Todos bem recheados, pra vc ficar gamado e comprar mais.</p>
+  <h1 class="hero-title">Chavito<br><span class="accent">Pastelaria</span></h1>
+  <p class="hero-desc">Pastéis bem recheados, feitos na hora para você.</p>
   <div class="hero-actions">
     <a href="#pedido" class="btn btn-fill">Fazer pedido</a>
     <a href="#cardapio" class="btn btn-outline">Ver cardápio</a>
@@ -396,12 +1210,12 @@ footer {
 <div id="cardapio" class="wrapper">
 
   <section class="section reveal">
-    <h2 class="section-title">Aqueles frito q n pode faltar</h2>
+    <h2 class="section-title">Pastéis Fritos</h2>
     <p class="section-note">Qualquer um por R$6,50 — sem exceção</p>
 
     <div class="lactose-info">
       <div class="lactose-dot"></div>
-      <span>Qualquer pastel pode ser feito sem lactose — é só pedir na hora do pedido.</span>
+      <span>Qualquer pastel pode ser feito sem lactose — é só selecionar a opção.</span>
     </div>
 
     <div class="menu-grid">
@@ -480,29 +1294,96 @@ footer {
   </section>
 
   <section class="section reveal">
-    <h2 class="section-title">Os assado</h2>
-    <p class="section-note">Os queridinho — principalmente pro cebolita</p>
-    <p class="assado-note">Os mesmos dos frito, muda merda nenhuma (só o preço q aumenta 50c).</p>
-    <div class="lista-simples">
-      <div class="lista-item"><span>Presunto e Queijo</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Queijo com Orégano</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Presunto, Queijo, Requeijão e Orégano</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Frango com Requeijão</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Strogonocof</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Chocolate Preto</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Chocolate Branco</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Oreo</span><span class="badge-sl">sem lactose</span></div>
-      <div class="lista-item"><span>Mesclado (Preto + Branco)</span><span class="badge-sl">sem lactose</span></div>
+    <h2 class="section-title">Pastéis Assados</h2>
+    <p class="section-note">Os favoritos — crocantes e deliciosos</p>
+    <p class="assado-note">Os mesmos recheios dos fritos, apenas o preço aumenta 50 centavos.</p>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <span class="item-name">Presunto e Queijo</span>
+        <div class="item-footer">
+          <span class="item-price">R$7,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Queijo com Orégano</span>
+        <div class="item-footer">
+          <span class="item-price">R$7,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Presunto, Queijo, Requeijão e Orégano</span>
+        <div class="item-footer">
+          <span class="item-price">R$7,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Frango com Requeijão</span>
+        <div class="item-footer">
+          <span class="item-price">R$7,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Strogonocof</span>
+        <span class="item-desc">Frango, requeijão e tempero. Tipo um strogonoff normal, só que no pastel.</span>
+        <div class="item-footer">
+          <span class="item-price">R$7,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Chocolate Preto</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$8,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Chocolate Branco</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$8,00</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Oreo</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$8,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span class="item-name">Mesclado (Preto + Branco)</span>
+        <div class="item-footer">
+          <span class="item-price doce">R$8,50</span>
+          <span class="badge-sl">sem lactose</span>
+        </div>
+      </div>
     </div>
   </section>
 
   <section id="pedido" class="section reveal">
     <div class="cta-box">
-      <h2>Qual tu vai querer?</h2>
-      <p>Manda um oi ou me marca pra fazer a merda do pedido.</p>
-      <a href="https://wa.me/5548999497113?text=Oi%2C%20quero%20comer%20pastel,%20me%20vende" class="btn btn-dark" target="_blank">
+      <h2>Qual você vai querer?</h2>
+      <p>Entre em contato para fazer seu pedido.</p>
+      
+      <div class="contact-form">
+        <div class="input-group">
+          <label for="contact-name">Nome</label>
+          <input type="text" id="contact-name" placeholder="Seu nome completo" required>
+        </div>
+        <div class="input-group">
+          <label for="contact-turma">Turma</label>
+          <input type="text" id="contact-turma" placeholder="Sua turma (ex: 2-51)" required>
+        </div>
+      </div>
+
+      <button id="btnContatoWpp" class="btn btn-dark">
         Chamar no WhatsApp
-      </a>
+      </button>
     </div>
   </section>
 
@@ -512,27 +1393,305 @@ footer {
     <div class="pag-grid">
       <div class="pag-card">
         <div class="pag-label">Pix</div>
-        <div class="pag-desc">Na hora, sem enrolação</div>
+        <div class="pag-desc">Na hora ou antes, sem enrolação</div>
       </div>
       <div class="pag-card">
         <div class="pag-label">Dinheiro</div>
-        <div class="pag-desc">Eu verifico se é real, cuidado</div>
+        <div class="pag-desc">Aceito dinheiro em espécie</div>
       </div>
     </div>
     <div class="aviso">
-      Não faço mais barato muito menos fiado. Ou paga, ou não come.
+      Não faço descontos nem fiado. Pagamento à vista apenas.
     </div>
   </section>
 
 </div>
 
-<footer>Pastelaria Chavito Brainrotzito &mdash; Cedup</footer>
+<footer>Pastelaria Chavito &mdash; Cedup</footer>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>Seu Pedido</h3>
+    <button class="cart-close" id="cartClose">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">Seu carrinho está vazio</div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-form-group">
+      <div class="cart-input-field">
+        <label for="cart-name">Nome</label>
+        <input type="text" id="cart-name" placeholder="Seu nome" required>
+      </div>
+      <div class="cart-input-field">
+        <label for="cart-turma">Turma</label>
+        <input type="text" id="cart-turma" placeholder="Sua turma" required>
+      </div>
+    </div>
+    <div class="cart-footer-total">
+      <span class="cart-footer-label">Total</span>
+      <span class="cart-footer-value" id="cartTotal">R$0,00</span>
+    </div>
+    <button class="cart-wpp-btn" id="cartWppBtn">Finalizar no WhatsApp</button>
+  </div>
+</div>
+
+<div class="cart-bar" id="cartBar">
+  <div class="cart-bar-info">
+    <div class="cart-bar-count" id="cartBarCount">0 itens</div>
+    <div class="cart-bar-total" id="cartBarTotal">R$0,00</div>
+  </div>
+  <button class="cart-clear" id="cartClear">Limpar</button>
+  <button class="cart-bar-btn" id="cartBarBtn">Ver carrinho</button>
+</div>
 
 <script>
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.07 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Cart System
+let cart = JSON.parse(localStorage.getItem('pastelariaCart')) || [];
+const LACTOSE_FEE = 1.00;
+
+// Initialize menu items with lactose toggle
+document.querySelectorAll('.menu-item').forEach(item => {
+  const badge = item.querySelector('.badge-sl');
+  const name = item.querySelector('.item-name')?.textContent;
+  const priceEl = item.querySelector('.item-price');
+  const basePrice = parseFloat(priceEl?.textContent.replace('R$', '').replace(',', '.')) || 0;
+  
+  if (badge) {
+    let lactoseFree = false;
+    
+    badge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      lactoseFree = !lactoseFree;
+      badge.classList.toggle('active', lactoseFree);
+      
+      const newPrice = lactoseFree ? basePrice + LACTOSE_FEE : basePrice;
+      priceEl.textContent = `R$${newPrice.toFixed(2).replace('.', ',')}`;
+    });
+  }
+  
+  // Add button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-btn';
+  addBtn.textContent = 'Adicionar ao carrinho';
+  addBtn.addEventListener('click', () => {
+    const badge = item.querySelector('.badge-sl');
+    const isLactoseFree = badge?.classList.contains('active') || false;
+    const priceEl = item.querySelector('.item-price');
+    const currentPrice = parseFloat(priceEl.textContent.replace('R$', '').replace(',', '.'));
+    
+    const sectionTitle = item.closest('.section')?.querySelector('.section-title')?.textContent;
+    let type = 'salgado';
+    if (sectionTitle?.includes('Doces')) type = 'doce';
+    else if (sectionTitle?.includes('assado')) type = 'assado';
+    
+    addToCart({
+      name: name,
+      price: currentPrice,
+      lactoseFree: isLactoseFree,
+      type: type
+    });
+  });
+  item.appendChild(addBtn);
+});
+
+function addToCart(item) {
+  cart.push(item);
+  saveCart();
+  updateCartUI();
+  
+  // Visual feedback
+  const btn = event.target;
+  btn.textContent = 'Adicionado!';
+  btn.classList.add('added');
+  setTimeout(() => {
+    btn.textContent = 'Adicionar ao carrinho';
+    btn.classList.remove('added');
+  }, 1000);
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  saveCart();
+  updateCartUI();
+}
+
+function toggleLactoseFree(index) {
+  const item = cart[index];
+  if (item.lactoseFree) {
+    item.price -= LACTOSE_FEE;
+    item.lactoseFree = false;
+  } else {
+    item.price += LACTOSE_FEE;
+    item.lactoseFree = true;
+  }
+  saveCart();
+  updateCartUI();
+}
+
+function clearCart() {
+  cart = [];
+  saveCart();
+  updateCartUI();
+}
+
+function saveCart() {
+  localStorage.setItem('pastelariaCart', JSON.stringify(cart));
+}
+
+function updateCartUI() {
+  const cartItems = document.getElementById('cartItems');
+  const cartTotal = document.getElementById('cartTotal');
+  const cartBarCount = document.getElementById('cartBarCount');
+  const cartBarTotal = document.getElementById('cartBarTotal');
+  const cartBar = document.getElementById('cartBar');
+  
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<div class="cart-empty">Seu carrinho está vazio</div>';
+    cartBar.classList.remove('visible');
+  } else {
+    cartBar.classList.add('visible');
+    cartItems.innerHTML = cart.map((item, index) => `
+      <div class="cart-entry">
+        <div class="cart-entry-info">
+          <div class="cart-entry-name">${item.name}</div>
+          <div class="cart-entry-tags">
+            <span class="cart-entry-tag badge-sl ${item.lactoseFree ? 'active' : ''}" onclick="toggleLactoseFree(${index})">sem lactose</span>
+            <span class="cart-entry-tag tipo">${item.type}</span>
+          </div>
+        </div>
+        <div class="cart-entry-price">R$${item.price.toFixed(2).replace('.', ',')}</div>
+        <button class="cart-entry-remove" onclick="removeFromCart(${index})">&times;</button>
+      </div>
+    `).join('');
+  }
+  
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  cartTotal.textContent = `R$${total.toFixed(2).replace('.', ',')}`;
+  cartBarTotal.textContent = `R$${total.toFixed(2).replace('.', ',')}`;
+  cartBarCount.textContent = `${cart.length} item${cart.length !== 1 ? 's' : ''}`;
+}
+
+// Cart drawer controls
+const cartDrawer = document.getElementById('cartDrawer');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartClose = document.getElementById('cartClose');
+const cartBarBtn = document.getElementById('cartBarBtn');
+const cartClear = document.getElementById('cartClear');
+const cartWppBtn = document.getElementById('cartWppBtn');
+
+cartBarBtn.addEventListener('click', () => {
+  cartDrawer.classList.add('open');
+  cartOverlay.classList.add('open');
+});
+
+cartClose.addEventListener('click', () => {
+  cartDrawer.classList.remove('open');
+  cartOverlay.classList.remove('open');
+});
+
+cartOverlay.addEventListener('click', () => {
+  cartDrawer.classList.remove('open');
+  cartOverlay.classList.remove('open');
+});
+
+cartClear.addEventListener('click', clearCart);
+
+cartWppBtn.addEventListener('click', () => {
+  if (cart.length === 0) return;
+  
+  const nome = document.getElementById('cart-name').value.trim();
+  const turma = document.getElementById('cart-turma').value.trim();
+  
+  if (!nome || !turma) {
+    alert('Por favor, preencha seu nome e sua turma no carrinho!');
+    return;
+  }
+  
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  let message = `*Pedido - Pastelaria Chavito*\n`;
+  message += `*Cliente:* ${nome}\n`;
+  message += `*Turma:* ${turma}\n\n`;
+  message += `*Itens:*\n`;
+  
+  cart.forEach((item, index) => {
+    message += `${index + 1}. ${item.name}`;
+    if (item.lactoseFree) message += ' (sem lactose +R$1,00)';
+    message += ` - R$${item.price.toFixed(2).replace('.', ',')}\n`;
+  });
+  
+  message += `\n*Total: R$${total.toFixed(2).replace('.', ',')}*`;
+  message += '\n\nAguardo confirmação!';
+  
+  const encoded = encodeURIComponent(message);
+  window.open(`https://wa.me/5548999497113?text=${encoded}`, '_blank');
+});
+
+// Botão de Contato Direto
+const btnContatoWpp = document.getElementById('btnContatoWpp');
+if (btnContatoWpp) {
+  btnContatoWpp.addEventListener('click', () => {
+    const nome = document.getElementById('contact-name').value.trim();
+    const turma = document.getElementById('contact-turma').value.trim();
+    
+    if (!nome || !turma) {
+      alert('Por favor, preencha seu nome e sua turma!');
+      return;
+    }
+    
+    const message = `Oi, quero comer pastel, me vende\n\n*Nome:* ${nome}\n*Turma:* ${turma}`;
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/5548999497113?text=${encoded}`, '_blank');
+  });
+}
+
+// Syncing and localStorage
+const nameInputs = [document.getElementById('contact-name'), document.getElementById('cart-name')];
+const classInputs = [document.getElementById('contact-turma'), document.getElementById('cart-turma')];
+
+function loadSavedUserData() {
+  const savedName = localStorage.getItem('pastelariaName') || '';
+  const savedTurma = localStorage.getItem('pastelariaTurma') || '';
+  
+  nameInputs.forEach(input => {
+    if (input) input.value = savedName;
+  });
+  classInputs.forEach(input => {
+    if (input) input.value = savedTurma;
+  });
+}
+
+function handleUserDataChange(type, value) {
+  localStorage.setItem(type === 'name' ? 'pastelariaName' : 'pastelariaTurma', value);
+  const inputs = type === 'name' ? nameInputs : classInputs;
+  inputs.forEach(input => {
+    if (input && input.value !== value) {
+      input.value = value;
+    }
+  });
+}
+
+nameInputs.forEach(input => {
+  if (input) {
+    input.addEventListener('input', (e) => handleUserDataChange('name', e.target.value));
+  }
+});
+
+classInputs.forEach(input => {
+  if (input) {
+    input.addEventListener('input', (e) => handleUserDataChange('turma', e.target.value));
+  }
+});
+
+// Initialize
+loadSavedUserData();
+updateCartUI();
 </script>
 </body>
 </html>
